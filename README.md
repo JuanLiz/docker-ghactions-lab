@@ -1,23 +1,3 @@
-<style>
-
-*, pre, code, kbd, samp, tt {
-    font-family: "CaskaydiaCove Nerd Font", "Cascadia Code", monospace;
-}
-
-h1, h2, h3{
-    font-family: "Lato Black", sans-serif;
-}
-
-h4, h5, h6 {
-    font-family: "Lato Semibold", sans-serif;
-}
-
-p, em, strong, a, ul, ol, li {
-    font-family: "Lato", sans-serif;
-}
-
-</style>
-
 # Taller: Implementación de canalizaciones CI/CD para imágenes de Docker con GitHub Actions y GitHub Packages
 
 **Por Diego Lizarazo[^1]**
