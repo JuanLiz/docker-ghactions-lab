@@ -1,0 +1,57 @@
+# Los nombres se pueden cambiar. Se recomienda que sean descriptivos
+name: Construir y publicar imagen de Docker
+
+# Definición del evento que desencadenará el flujo de trabajo. Push en la rama principal
+on:
+  push:
+    branches: [ main ]
+
+# Definicón de variables de entorno
+env:
+  # URL del registro de contenedores 
+  REGISTRY: ghcr.io
+  # El nombre de la imagen está definido como el nombre del repositorio
+  IMAGE_NAME: ${{ github.repository }}
+
+# Definición de los trabajos que se ejecutarán
+jobs:
+  build-push-registry:
+    name: Construir y publicar imagen de Docker al registro de contenedores de GitHub Packages
+    # Definicón del entorno de ejecución (runner)
+    runs-on: ubuntu-latest
+
+    # Definición de los permisos necesarios para el flujo de trabajo
+    permissions:
+      packages: write
+      contents: read
+      id-token: write
+
+    # Definicón de los pasos que se ejecutarán en el trabajo
+    steps:
+      - name: Sincronizar el código
+        uses: actions/checkout@v4
+
+      - name: Iniciar sesión en el registro de contenedores
+        uses: docker/login-action@v3
+        with:
+          # Tomar URL de las variables de entorno
+          registry: ${{ env.REGISTRY }}
+          # El nombre de usuario es el mismo que el de GitHub
+          username: ${{ github.actor }}
+          # La contraseña es el token generado por GitHub
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extraer metadatos de la imagen
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Construir y publicar imagen en GitHub Packages
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
