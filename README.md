@@ -1,4 +1,4 @@
-# Taller: Implementación de canalizaciones CI/CD para imágenes de Docker con GitHub Actions y GitHub Packages
+# Taller: Implementación de canalizaciones CI/CD en proyectos de software con Docker, GitHub Actions y GitHub Packages
 
 **Por Diego Lizarazo[^1]**
 
@@ -10,7 +10,7 @@ En este taller, aprenderemos a implementar un flujo de integración y entrega co
 
 ### Docker
 
-Docker es una plataforma que permite deplegar  aplicaciones aisladas en contenedores. Un contenedor es una unidad de software que contiene todo lo necesario para ejecutar una aplicación: las dependencias, el código, las bibliotecas y las configuraciones. Los contenedores son ligeros, portátiles, fáciles de compartir, lo que los hace ideales para implementar aplicaciones en entornos de desarrollo, pruebas y producción.
+Docker es una plataforma que permite deplegar aplicaciones aisladas en contenedores. Un contenedor es una unidad de software que contiene todo lo necesario para ejecutar una aplicación: las dependencias, el código, las bibliotecas y las configuraciones. Los contenedores son ligeros, portátiles, fáciles de compartir, lo que los hace ideales para implementar aplicaciones en entornos de desarrollo, pruebas y producción.
 
 De igual manera, por estar aislados los contenedores no hay que preocuparse por las diferencias de configuración, ni que la ejecución de una aplicación afecte a otra, o al propio sistema operativo. Esta flexibilidad permite, por ejemplo, tener múltiples versiones de una misma aplicación, diferentes entornos de desarrollo, distintas versiones de lenguajes de programación, bibliotecas, etc. corriendo en un mismo sistema.
 
@@ -266,7 +266,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 ```
 
-Para incluir este ejemplo en el proyecto, se creará la carpeta `.github/workflows` **en la carpeta raíz del repositorio,** y dentro de ella, crear un archivo con el nombre que se desee, pero con la extensión `.yml`. Por ejemplo, `docker.yml`.
+Para incluir este ejemplo en el proyecto, se creará la carpeta `.github/workflows` **en la carpeta raíz del repositorio,** y dentro de ella, un archivo con el nombre que se desee, pero con la extensión `.yml`. Por ejemplo, `docker.yml`.
 
 ### Ejecución del flujo de trabajo
 
@@ -317,9 +317,7 @@ También podemos verificar que hay una nueva versión de la imagen en GitHub Pac
 Esta es la maravilla de las canalizaciones de integración y entrega continua (CI/CD): Se automatiza el proceso y se aseguran entregas de valor.
 
 > [!TIP]
-> Se pueden crear más flujos de trabajo para automatizar otras tareas, como pruebas, análisis de código, despliegue en entornos de pruebas, detección de vulnerabilidades, publicación en tiendas de aplicaciones, etc. Puedes explorar todas las posibilidades en la documentación oficial de GitHub Actions.
-> [!TIP]
-> Para la ayuda costrucción del archivo de configuración YAML, además de la referencia de sintaxis[^6] se pueden usar asistentes de IA, teniendo precaución con las versiones de las acciones y las dependencias.
+> Se pueden crear más flujos de trabajo para automatizar otras tareas, como pruebas, análisis de código, despliegue en entornos de pruebas, detección de vulnerabilidades, publicación en tiendas de aplicaciones, etc. Puedes explorar todas las posibilidades en la documentación oficial de GitHub Actions[^5]. Para la ayuda con la costrucción del archivo de configuración YAML, además de la referencia de sintaxis[^6] se pueden usar asistentes de IA, teniendo precaución con las versiones de las acciones y las dependencias.
 
 [^6]: [Referencia de sintaxis para flujos de trabajo de GitHub Actions](https://docs.github.com/es/actions/writing-workflows/workflow-syntax-for-github-actions)
 
@@ -354,7 +352,7 @@ Para que el contenedor pueda ser accedido desde el exterior, se debe especificar
 docker run -p 3000:3000 <nombre-de-la-imagen>
 ```
 
-### Verificar que el contenedor se está ejecutando
+#### Verificar que el contenedor se está ejecutando
 
 ```bash
 docker ps
