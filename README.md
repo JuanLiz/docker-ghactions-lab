@@ -62,7 +62,7 @@ Aparte de tener nociones básicas de Git y el uso de la línea de comandos, para
 
 - Tener una cuenta en GitHub.
 - Tener instalado Docker Engine en la máquina local. Puede descargarse desde [este enlace](https://docs.docker.com/engine/install/). No es necesario instalar Docker Desktop, ya que **no vamos a usar una interfaz gráfica.**
-- Tener un repositorio en GitHub con el código de la aplicación, en caso de no tenerlo, se puede usar la aplicación de ejemplo de este taller (carpeta sample-app)
+- Tener un repositorio en GitHub con el código de la aplicación con la que se practicará. En caso de no tenerlo, se puede usar la aplicación de ejemplo de este taller (carpeta sample-app). (Si se usa el ejemplo, el repositorio debe inicializarse dentro de dicha carpeta, **no dentro de la carpeta raíz del repositorio de este taller**).
 
 ## Parte 1: Integración de Docker en un proyecto existente
 
@@ -261,17 +261,51 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 ```
 
-Para incluir este ejemplo en el proyecto, se creará la carpeta `.github/workflows` y dentro de ella, crear un archivo con el nombre que se desee, pero con la extensión `.yml`. Por ejemplo, `docker.yml`. **Debe ubicarse en la carpeta raíz del proyecto.**
+Para incluir este ejemplo en el proyecto, se creará la carpeta `.github/workflows` **en la carpeta raíz del repositorio,** y dentro de ella, crear un archivo con el nombre que se desee, pero con la extensión `.yml`. Por ejemplo, `docker.yml`.
 
-#### Ejecución del flujo de trabajo
+### Ejecución del flujo de trabajo
 
 Para ejecutar el flujo de trabajo, se debe hacer un push a la rama principal del repositorio. GitHub Actions detectará el evento y ejecutará el flujo de trabajo.
 
 Para verificar que el flujo de trabajo se ejecutó correctamente, se puede ir a la pestaña "Actions" del repositorio en GitHub.
 
-![Ejecución de GitHub Actions](https://docs.github.com/assets/images/help/repository/actions-tab-actions.png "Figura: Ejecución de GitHub Actions")
+![Vista de los flujos de trabajo en GitHub](img/workflow-1.png "Figura: Vista de los flujos de trabajo en GitHub")
 
-## Parte 3: Deslpiegue de la imagen en un contenedor
+En esta vista se pueden ver los flujos de trabajo que se han ejecutado, así como el estado de cada uno.
+
+![Vista de ejecución de un flujo de trabajo en GitHub](img/workflow-2.png "Figura: Vista de ejecución de un flujo de trabajo en GitHub")
+
+Si se hace clic en uno de los flujos de trabajo, se puede ver el detalle de cada paso y si se ejecutaron correctamente.
+
+![Vista detallada de un flujo de trabajo en GitHub](img/workflow-3.png "Figura: Vista detallada de un flujo de trabajo en GitHub")
+
+En la siguiente imagen, podemos ver por ejemplo el detalle de la construcción de la imagen.
+
+![Vista detallada de un paso de un flujo de trabajo en GitHub](img/workflow-4.png "Figura: Vista detallada de un paso de un flujo de trabajo en GitHub")
+
+Cuando el flujo de trabajo se ejecute correctamente, todos los pasos y el trabajo se marcarán como exitosos con un ícono verde.
+
+![Vista de un flujo de trabajo exitoso en GitHub](img/workflow-5.png "Figura: Vista de un flujo de trabajo exitoso en GitHub")
+
+### Verificar que la imagen se publicó en GitHub Packages
+
+Para verificar que la imagen se publicó correctamente en GitHub Packages, se puede ir a la sección "Packages" del repositorio en GitHub.
+
+![Vista de los paquetes en GitHub](img/packages-1.png "Figura: Vista de los paquetes en GitHub")
+
+En esta vista se pueden ver los paquetes que se han publicado en GitHub Packages. Si se hace clic en uno de los paquetes, se puede ver el detalle de la imagen, junto con las instrucciones para usarla.
+
+![Vista detallada de un paquete en GitHub](img/packages-2.png "Figura: Vista detallada de un paquete en GitHub")
+
+### La construcción de la imagen ahora es automática
+
+Con el flujo de trabajo de GitHub Actions, la construcción de la imagen de Docker y su publicación en GitHub Packages se ha automatizado. **Cada vez que se haga un push a la rama principal del repositorio,** el flujo de trabajo se ejecutará y la imagen con  los nuevos cambios se publicará en GitHub Packages.
+
+Podemos comprobarlo haciendo un cambio en el código, haciendo un commit y un push a la rama principal, y verificando que el flujo de trabajo se ejecuta correctamente.
+
+## Parte 3: Despliegue de la imagen en un contenedor
+
+Ya que la imagen se publicó correctamente en GitHub Packages, se puede proceder a descargarla y ejecutarla en un contenedor.
 
 Recordemos que el contenedor es la instancia de la imagen. Es decir, es la imagen ejecutándose. Para ejecutar la imagen, se usa el comando `docker run` y se especifica el nombre de la imagen con los parámetros adicionales.
 
