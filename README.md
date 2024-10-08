@@ -20,6 +20,10 @@ De igual manera, por estar aislados los contenedores no hay que preocuparse por 
 
 ![Esquema: Contenedores vs Máquinas virtuales](https://www.cherryservers.com/v3/assets/blog/2022-12-20/01.jpg "Figura: Contenedores vs Máquinas virtuales")
 
+Los contenedores son stateless[^3], es decir, no almacenan información. Al ejecutar un contenedor, se crea una instancia de la imagen, y al detenerlo, se elimina y se pierden los archivos dentro de él. Para persistir datos, se pueden usar volúmenes y configuraciones adicionales.
+
+[^3]: Más información sobre las definiciones de estado de aplicaciones y plataformas (stateful vs stateless) en [este artículo](https://www.redhat.com/en/topics/cloud-native-apps/stateful-vs-stateless).
+
 #### Arquitecura de Docker: El motor y el registro de contenedores
 
 Docker se compone de tres componentes principales,que para efecot prácticos los resumiremos en dos: El motor de Docker y el registro de contenedores.
@@ -96,6 +100,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 # Instalar las dependencias
 RUN npm ci
+# Copiar todo el código de la aplicación a la imagen
 COPY . .
 # Compilar la aplicación con npm
 RUN npm run build
@@ -127,9 +132,9 @@ CMD HOSTNAME="0.0.0.0" node server.js
 ```
 
 > [!IMPORTANT]
-> El siguiente ejemplo no es una solución única. Cada aplicación tiene sus propias necesidades y requerimientos. Se recomienda leer la documentación oficial de Docker[^3] para entender mejor cada comando.
+> El siguiente ejemplo no es una solución única. Cada aplicación tiene sus propias necesidades y requerimientos. Se recomienda leer la referencia de Dockerfile[^4] para entender mejor cada comando.
 
-[^3]: [Referencia de Dockerfile](https://docs.docker.com/reference/dockerfile/)
+[^4]: [Referencia de Dockerfile](https://docs.docker.com/reference/dockerfile/)
 
 #### Comandos usados en el Dockerfile
 
@@ -167,14 +172,14 @@ Con lo anterior, ya tenemos la imagen de Docker creada y lista para ser usada.
 
 ### Partes de los flujos de trabajo
 
-Según la documentación oficial de GitHub Actions[^4], un flujo de trabajo se compone de varias partes:
+Según la documentación oficial de GitHub Actions[^5], un flujo de trabajo se compone de varias partes:
 
 - **Eventos:** Son los desencadenantes que inician el flujo de trabajo. Suele ser un evento de GitHub, como un push, un pull request, la aprtura de una incidencia (issue), etc.
 - **Trabajos:** Son las tareas que se ejecutan en paralelo en el flujo de trabajo. Cada trabajo se ejecuta en un entorno de ejecución (runner) y puede contener varios pasos.
 - **Acciones:** Son las tareas individuales que se ejecutan en un trabajo. Como usualmente se repiten, ya existen acciones predefinidas que se pueden usar y conseguir desde el Marketplace de GitHub Actions o crearlas personalizadas. Para este caso, usaremos acciones predefinidas.
 - **Entornos de ejecución (runners):** Son las máquinas virtuales o contenedores que ejecutan los trabajos. GitHub provee máquinas virtuales con Windows, Ubuntu Linux y macOS. Cada flujo de trabajo se ejecuta en un runner nuevo.
 
-[^4]: [Documentación oficial de GitHub Actions](https://docs.github.com/en/actions/about-github-actions/understanding-github-actions)
+[^5]: [Documentación oficial de GitHub Actions](https://docs.github.com/en/actions/about-github-actions/understanding-github-actions)
 
 ### Archivo de configuración de GitHub Actions
 
@@ -299,57 +304,54 @@ En esta vista se pueden ver los paquetes que se han publicado en GitHub Packages
 
 ### La construcción de la imagen ahora es automática
 
-Con el flujo de trabajo de GitHub Actions, la construcción de la imagen de Docker y su publicación en GitHub Packages se ha automatizado. **Cada vez que se haga un push a la rama principal del repositorio,** el flujo de trabajo se ejecutará y la imagen con  los nuevos cambios se publicará en GitHub Packages.
+Con la canalización creada a partir del flujo de trabajo de GitHub Actions, la construcción de la imagen de Docker y su publicación en GitHub Packages se ha automatizado. **Cada vez que se haga un push a la rama principal del repositorio** se repetirá el proceso.
 
-Podemos comprobarlo haciendo un cambio en el código, haciendo un commit y un push a la rama principal, y verificando que el flujo de trabajo se ejecuta correctamente.
+Podemos comprobarlo haciendo un cambio en el código, haciendo un commit y un push a la rama principal, y verificando que el flujo de trabajo se ejecuta de nuevo.
+
+![Verificación de la nueva ejecución del flujo de trabajo](img/workflow-6.png "Figura: Verificación de la ejecución del flujo de trabajo")
+
+También podemos verificar que hay una nueva versión de la imagen en GitHub Packages.
+
+![Verificación de la nueva versión de la imagen en GitHub Packages](img/packages-3.png "Figura: Verificación de la nueva versión de la imagen en GitHub Packages")
+
+Esta es la maravilla de las canalizaciones de integración y entrega continua (CI/CD): Se automatiza el proceso y se aseguran entregas de valor.
+
+> [!TIP]
+> Se pueden crear más flujos de trabajo para automatizar otras tareas, como pruebas, análisis de código, despliegue en entornos de pruebas, detección de vulnerabilidades, publicación en tiendas de aplicaciones, etc. Puedes explorar todas las posibilidades en la documentación oficial de GitHub Actions.
+> [!TIP]
+> Para la ayuda costrucción del archivo de configuración YAML, además de la referencia de sintaxis[^6] se pueden usar asistentes de IA, teniendo precaución con las versiones de las acciones y las dependencias.
+
+[^6]: [Referencia de sintaxis para flujos de trabajo de GitHub Actions](https://docs.github.com/es/actions/writing-workflows/workflow-syntax-for-github-actions)
 
 ## Parte 3: Despliegue de la imagen en un contenedor
 
 Ya que la imagen se publicó correctamente en GitHub Packages, se puede proceder a descargarla y ejecutarla en un contenedor.
 
+### Descargar la imagen
+
+Para descargar la imagen en el entorno local mediante la terminal, se usa el comando `docker pull` seguido de la URL de la imagen en GitHub Packages.
+
+```bash
+docker pull ghcr.io/<nombre-de-usuario>/<nombre-del-repositorio>/<nombre-de-la-imagen>:<etiqueta>
+```
+
+El comando también se puede copiar directamente desde la página de detalles de la imagen en GitHub Packages.
+
+Podemos verificar que la imagen se descargó correctamente con el comando `docker images`.
+
+### Ejecutar la imagen en un contenedor
+
 Recordemos que el contenedor es la instancia de la imagen. Es decir, es la imagen ejecutándose. Para ejecutar la imagen, se usa el comando `docker run` y se especifica el nombre de la imagen con los parámetros adicionales.
 
-### Especificar el puerto
+> [!IMPORTANT]
+> El nombre de la imagen debe escribirse de manera completa, incluyendo la URL del registro de contenedores de GitHub Packages. Por ejemplo, `ghcr.io/<nombre-de-usuario>/<nombre-del-repositorio>/<nombre-de-la-imagen>:<etiqueta>`.
+
+#### Especificar el puerto
 
 Para que el contenedor pueda ser accedido desde el exterior, se debe especificar el puerto en el que la aplicación se ejecutará. Para eso, se usa el parámetro `-p <puerto-externo>:<puerto-interno>`.
 
 ```bash
 docker run -p 3000:3000 <nombre-de-la-imagen>
-```
-
-### Ejecutarse en segundo plano
-
-Para que el contenedor se ejecute en segundo plano, se usa el parámetro `-d`.
-
-```bash
-docker run -d -p 3000:3000 <nombre-de-la-imagen>
-```
-
-### Especificar el nombre del contenedor
-
-Por defecto, Docker asigna un nombre aleatorio al contenedor. Para especificar el nombre, se usa el parámetro `--name <nombre-del-contenedor>`.
-
-```bash
-docker run -d -p 3000:3000 --name <nombre-del-contenedor> <nombre-de-la-imagen>
-```
-
-
-
-### Consideraciones: Base de datos local
-
-En escenarios de desarollo y producción, las aplicaciones se conectan a bases de datos mediante strings de conexión. Pero debido a que, para este caso estaremos usando una base de datos local, y Docker usa su propio espacio de red, **no podremos acceder a la base de datos desde el contenedor.**
-
-Si usamos `localhost`, el contenedor intentará acceder a su propia base de datos, que no existe, porque está intentando acceder a su red interna:
-
-![Red interna de Docker](https://res.cloudinary.com/practicaldev/image/fetch/s--Md8BNSlM--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3fj5w1jrpqqpu7gv2kww.jpg)
-
-Para solucionar esto, tenemos varias opciones, como cambiar las configuraciones de conexión de la aplicación, agregar una red, usar docker-compose, etc. Por practicidad, en este caso usaremos el parámetro `--network host` para que el contenedor use la misma red que el host (nuestra máquina).
-
-![Alt text](https://res.cloudinary.com/practicaldev/image/fetch/s--5H94WFmE--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/bclomlpxgr8rqgqzm2ta.jpg)
-
-```bash
-docker run -d -p 3000:3000 --network host \
---name <nombre-del-contenedor> <nombre-de-la-imagen>
 ```
 
 ### Verificar que el contenedor se está ejecutando
@@ -358,16 +360,31 @@ docker run -d -p 3000:3000 --network host \
 docker ps
 ```
 
+#### Ejecutarse en segundo plano
+
+Para que el contenedor se ejecute en segundo plano, se usa el parámetro `-d`.
+
+```bash
+docker run -d -p 3000:3000 <nombre-de-la-imagen>
+```
+
+#### Especificar el nombre del contenedor
+
+Por defecto, Docker asigna un nombre aleatorio al contenedor. Para especificar el nombre, se usa el parámetro `--name <nombre-del-contenedor>`.
+
+```bash
+docker run -d -p 3000:3000 --name <nombre-del-contenedor> <nombre-de-la-imagen>
+```
+
+Se puede verificar que el contenedor se está ejecutando correctamente con el comando `docker ps`.
+
+> [!IMPORTANT]
+> Estos son los comandos básicos de ejecución. En otras aplicaciones, se pueden necesitar más parámetros, como variables de entorno, volúmenes para persistir datos, redes, etc. Se recomienda leer la documentación oficial de Docker[^7] para entender mejor cada comando.
+
+[^7]: [Documentación oficial de Docker](https://docs.docker.com/)
+
 ## Conclusiones
 
-- En este laboratorio aprendimos los comandos básicos para realizar un despliegue de una aplicación en un contenedor Docker.
-
-- Quedan muchos temas por explorar, como el uso de volúmenes, redes, gestión de secretos, docker-compose, etc. Animo a que sean investigados y practicados para familiarizarse con ellos.
-
-- Docker se usa actualmente en la mayoría de escenarios de desarrollo y producción, por lo que es importante conocerlo y saber usarlo.
-
-## Referencias
-
-- [Documentación oficial de Docker](https://docs.docker.com/)
-- [Docker Hub](https://hub.docker.com/)
-- [Referencia de Dockerfile](https://docs.docker.com/engine/reference/builder/)
+- En este taller, aprendimos a integrar Docker en un proyecto existente, creando un Dockerfile para la generación de una imagen de Docker y automatizamos la construcción de la imagen y su publicación en el registro de contenedores GitHub Packages con GitHub Actions.
+- Para profundizar en el uso de Docker se pueden revisar temas como volúmenes, redes, orquestadores de contenedores, etc.
+- Con este taller se logra tener una noción y punto de partida para implementar prácticas de DevOps en proyectos de software. Se pueden explorar más herramientas y técnicas para mejorar la calidad y eficiencia en la planificación, desarrollo y entrega del software.
