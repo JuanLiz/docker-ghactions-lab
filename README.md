@@ -261,7 +261,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 ```
 
-Para incluir este ejemplo en el repositorio, se debe crear la carpeta `.github/workflows` y dentro de ella, crear un archivo con el nombre que se desee, pero con la extensión `.yml`. Por ejemplo, `docker.yml`.
+Para incluir este ejemplo en el proyecto, se creará la carpeta `.github/workflows` y dentro de ella, crear un archivo con el nombre que se desee, pero con la extensión `.yml`. Por ejemplo, `docker.yml`. **Debe ubicarse en la carpeta raíz del proyecto.**
 
 #### Ejecución del flujo de trabajo
 
