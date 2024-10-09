@@ -1,10 +1,10 @@
-# Taller: Implementación de canalizaciones CI/CD en proyectos de software con Docker, GitHub Actions y GitHub Packages
+# Taller: Implementación de canalizaciones de integración continua en proyectos de software con Docker, GitHub Actions y GitHub Packages
 
 **Por Diego Lizarazo[^1]**
 
 [^1]: Estudiante de Ingeniería de Sistemas y Computación de la Universidad de Cundinamarca. Microsoft Certified: Azure DevOps Engineer Expert y Azure Developer Associate. [GitHub](https://github.com/Juanliz) | [ORCID](https://orcid.org/0009-0002-2905-9092)
 
-En este taller, aprenderemos a implementar un flujo de integración y entrega continua (CI/CD) para una aplicación sencilla en un contenedor Docker. Usaremos GitHub Actions para automatizar la construcción de la imagen de Docker, su publicación en GitHub Packages, y su posterior despliegue en un contenedor.
+En este taller, aprenderemos a implementar un flujo de integración continua (CI) para una aplicación sencilla en un contenedor Docker. Usaremos GitHub Actions para automatizar la construcción de la imagen de Docker, su publicación en GitHub Packages, y su posterior despliegue en un contenedor.
 
 ## Conceptos previos
 
@@ -59,6 +59,8 @@ Entendiendo estos conceptos, en este taller aprenderemos a:
 1. **Integrar Docker en un proyecto existente**, creando un Dockerfile para la generación de una imagen de Docker. Para este caso, usaremos una aplicación de Node.js sencilla, la cual es la plantilla inicial de un proyecto de Next.js. Si se desea, se puede usar cualquier otro proyecto, de cualquier otro lenguaje, plataforma, entorno, etc.
 2. **Automatizar la construcción de la imagen y su publicación en el registro de contenedores GitHub Packages**, usando GitHub Actions mediante la configuración de un flujo de trabajo en un archivo de configuración.
 3. **Desplegar la imagen en un contenedor**, obteniendo la imagen desde GitHub Packages y ejecutándola en el entorno local.
+
+![Esquema: Flujo de canalización propuesto para el taller](img/schema.svg "Figura: Flujo de canalización propuesto para el taller")
 
 ## Requisitos previos
 
