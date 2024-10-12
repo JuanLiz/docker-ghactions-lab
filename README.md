@@ -10,13 +10,13 @@ En este taller, aprenderemos a implementar un flujo de integración continua (CI
 
 ### Docker
 
-Docker es una plataforma que permite deplegar aplicaciones aisladas en contenedores. Un contenedor es una unidad de software que contiene todo lo necesario para ejecutar una aplicación: las dependencias, el código, las bibliotecas y las configuraciones. Los contenedores son ligeros, portátiles, fáciles de compartir, lo que los hace ideales para implementar aplicaciones en entornos de desarrollo, pruebas y producción.
+Docker es una plataforma que permite desplegar aplicaciones aisladas en contenedores. Un contenedor es una unidad de software que contiene todo lo necesario para ejecutar una aplicación: las dependencias, el código, las bibliotecas y las configuraciones. Los contenedores son ligeros, portátiles, fáciles de compartir, lo que los hace ideales para implementar aplicaciones en entornos de desarrollo, pruebas y producción.
 
 De igual manera, por estar aislados los contenedores no hay que preocuparse por las diferencias de configuración, ni que la ejecución de una aplicación afecte a otra, o al propio sistema operativo. Esta flexibilidad permite, por ejemplo, tener múltiples versiones de una misma aplicación, diferentes entornos de desarrollo, distintas versiones de lenguajes de programación, bibliotecas, etc. corriendo en un mismo sistema.
 
 **A Docker siempre se le compara con una solución de virtualización tradicional**, como las máquinas virtuales. La principal diferencia es que Docker no virtualiza el hardware, sino que la abstracción es meramente hecha a nivel de software[^2]. Esto hace que los contenedores sean más ligeros y rápidos que las máquinas virtuales.
 
-[^2]: Más información de la abstractación de Docker a nivel de software en [este artículo](https://coffeebytes.dev/es/container-de-docker-con-namespaces-y-cgroups/).
+[^2]: Más información de la abstracción de Docker a nivel de software en [este artículo](https://coffeebytes.dev/es/container-de-docker-con-namespaces-y-cgroups/).
 
 ![Esquema: Contenedores vs Máquinas virtuales](https://www.cherryservers.com/v3/assets/blog/2022-12-20/01.jpg "Figura: Contenedores vs Máquinas virtuales")
 
@@ -24,9 +24,9 @@ Los contenedores son stateless[^3], es decir, no almacenan información. Al ejec
 
 [^3]: Más información sobre las definiciones de estado de aplicaciones y plataformas (stateful vs stateless) en [este artículo](https://www.redhat.com/en/topics/cloud-native-apps/stateful-vs-stateless).
 
-#### Arquitecura de Docker: El motor y el registro de contenedores
+#### Arquitectura de Docker: El motor y el registro de contenedores
 
-Docker se compone de tres componentes principales,que para efecot prácticos los resumiremos en dos: El motor de Docker y el registro de contenedores.
+Docker se compone de tres componentes principales, que para efectos prácticos los resumiremos en dos: El motor de Docker y el registro de contenedores.
 
 - Los contenedores corren una instancia de una imagen dentro del propio motor de Docker. Es decir, el motor de Docker es el que se encarga de ejecutar los contenedores.
 
@@ -176,7 +176,7 @@ Con lo anterior, ya tenemos la imagen de Docker creada y lista para ser usada.
 
 Según la documentación oficial de GitHub Actions[^5], un flujo de trabajo se compone de varias partes:
 
-- **Eventos:** Son los desencadenantes que inician el flujo de trabajo. Suele ser un evento de GitHub, como un push, un pull request, la aprtura de una incidencia (issue), etc.
+- **Eventos:** Son los desencadenantes que inician el flujo de trabajo. Suele ser un evento de GitHub, como un push, un pull request, la apertura de una incidencia (issue), etc.
 - **Trabajos:** Son las tareas que se ejecutan en paralelo en el flujo de trabajo. Cada trabajo se ejecuta en un entorno de ejecución (runner) y puede contener varios pasos.
 - **Acciones:** Son las tareas individuales que se ejecutan en un trabajo. Como usualmente se repiten, ya existen acciones predefinidas que se pueden usar y conseguir desde el Marketplace de GitHub Actions o crearlas personalizadas. Para este caso, usaremos acciones predefinidas.
 - **Entornos de ejecución (runners):** Son las máquinas virtuales o contenedores que ejecutan los trabajos. GitHub provee máquinas virtuales con Windows, Ubuntu Linux y macOS. Cada flujo de trabajo se ejecuta en un runner nuevo.
@@ -199,8 +199,8 @@ Para cumplir con los objetivos del taller, se debe crear un flujo de trabajo que
 
    1. **Definir el entorno de ejecución.** En este caso, se usará un runner de Ubuntu Linux.
    2. **Definir los permisos para la autenticación**. GitHub crea automáticamente un token de autenticación para el flujo de trabajo, pero debemos especificar los permisos necesarios para que pueda leer el contenido del repositorio y publicar la imagen en GitHub Packages.
-   3. **Sincronizar el código del repositorio en le entorno de ejecución,** usando la acción predefinida `actions/checkout@v4`.
-   4. **Iniciar sesión en el registro de contenedores,** usando la acción predefinda que provee Docker: `docker/login-action@v3`. Tendremos que especificar qué registro de contenedor usaremos, en este caso el de GitHub Packages (`ghcr.io`), junto con las respectivas credenciales.
+   3. **Sincronizar el código del repositorio en el entorno de ejecución,** usando la acción predefinida `actions/checkout@v4`.
+   4. **Iniciar sesión en el registro de contenedores,** usando la acción predefinida que provee Docker: `docker/login-action@v3`. Tendremos que especificar qué registro de contenedor usaremos, en este caso el de GitHub Packages (`ghcr.io`), junto con las respectivas credenciales.
    5. **Extraer los metadatos de la imagen,** usando la acción predefinida `docker/metadata-action@v6`. Esta acción extrae los metadatos de la imagen, como las etiquetas, la arquitectura, el sistema operativo, etc.
    6. **Construir la imagen y publicarla en GitHub Packages,** usando la acción predefinida `docker/build-push-action@v3`. En esta acción, se especifica la ruta del Dockerfile, el nombre de la imagen, la etiqueta, y el registro de contenedores (GitHub Packages).
 
@@ -217,7 +217,7 @@ on:
   push:
     branches: [ main ]
 
-# Definicón de variables de entorno
+# Definición de variables de entorno
 env:
   # URL del registro de contenedores 
   REGISTRY: ghcr.io
@@ -228,7 +228,7 @@ env:
 jobs:
   build-push-registry:
     name: Construir y publicar imagen de Docker al registro de contenedores de GitHub Packages
-    # Definicón del entorno de ejecución (runner)
+    # Definición del entorno de ejecución (runner)
     runs-on: ubuntu-latest
 
     # Definición de los permisos necesarios para el flujo de trabajo
@@ -237,7 +237,7 @@ jobs:
       contents: read
       id-token: write
 
-    # Definicón de los pasos que se ejecutarán en el trabajo
+    # Definición de los pasos que se ejecutarán en el trabajo
     steps:
       - name: Sincronizar el código
         uses: actions/checkout@v4
@@ -319,7 +319,7 @@ También podemos verificar que hay una nueva versión de la imagen en GitHub Pac
 Esta es la maravilla de las canalizaciones de integración y entrega continua (CI/CD): Se automatiza el proceso y se aseguran entregas de valor.
 
 > [!TIP]
-> Se pueden crear más flujos de trabajo para automatizar otras tareas, como pruebas, análisis de código, despliegue en entornos de pruebas, detección de vulnerabilidades, publicación en tiendas de aplicaciones, etc. Puedes explorar todas las posibilidades en la documentación oficial de GitHub Actions[^5]. Para la ayuda con la costrucción del archivo de configuración YAML, además de la referencia de sintaxis[^6] se pueden usar asistentes de IA, teniendo precaución con las versiones de las acciones y las dependencias.
+> Se pueden crear más flujos de trabajo para automatizar otras tareas, como pruebas, análisis de código, despliegue en entornos de pruebas, detección de vulnerabilidades, publicación en tiendas de aplicaciones, etc. Puedes explorar todas las posibilidades en la documentación oficial de GitHub Actions[^5]. Para la ayuda con la construcción del archivo de configuración YAML, además de la referencia de sintaxis[^6] se pueden usar asistentes de IA, teniendo precaución con las versiones de las acciones y las dependencias.
 
 [^6]: [Referencia de sintaxis para flujos de trabajo de GitHub Actions](https://docs.github.com/es/actions/writing-workflows/workflow-syntax-for-github-actions)
 
